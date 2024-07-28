@@ -1,24 +1,24 @@
 package main
 
 import (
+	"anna/config"
+	"anna/routes"
 	"fmt"
+	"log"
 	"net/http"
-	"practice/middleware"
-	"practice/todos"
-	"practice/users"
 
-	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	router := gin.Default()
-	publicRoutes := router.Group("/users")
-	publicRoutes.POST("/register", users.RegisterUser)
-	publicRoutes.POST("/login", users.LoginUser)
-
-	router.Use(middleware.AuthMiddleware())
-	router.POST("todos/create", todos.CreateTodo)
+	fmt.Println("..........")
+	if err := godotenv.Load(".env"); err != nil {
+		log.Println("Failed to load env")
+	}
+	appConfig := config.NewAppConfig()
+	fmt.Println("....wsa")
+	appCtx := config.NewAppContext(appConfig)
 
 	fmt.Println("Server Listening on port no 8080")
-	http.ListenAndServe("localhost:8080", router)
+	http.ListenAndServe("localhost:8080", routes.NewRoutes(appCtx))
 }
